@@ -131,3 +131,5 @@ dmypy.json
 # private
 config*
 token*
+
+.vscode
