@@ -12,11 +12,11 @@ def get_balance():
     """Returns BTC balance of the third whale
 
     :return: BTC balance of the third whale
-    :rtype: int
+    :rtype: float
     """
     return requests.get(
         "https://blockchain.info/q/addressbalance/1P5ZEDWTKTFGxQjZphgWPQUpe554WKDfHQ"
-    ).json()
+    ).json()/1e8
 
 
 def record_bal(balance: int):
