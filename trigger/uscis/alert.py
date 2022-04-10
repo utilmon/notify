@@ -15,8 +15,6 @@ receipt_numbers = ["MSC2290390290", "MSC2290390292", "MSC2290390291"]
 
 def record_status(new_status: dict):
 
-    new_status["date"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-
     path = f"{os.path.dirname(__file__)}/history.yaml"
     history = yaml.safe_load(open(path, "r"))
     history.insert(0, new_status)
@@ -53,6 +51,9 @@ if __name__ == "__main__":
     new_status = update_status(old_status, receipt_numbers)
 
     if new_status != old_status:
+
+        new_status["date"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
         msg = json.dumps(new_status, indent=4)
         gmail.send_strmsg(title="Python: USCIS update", msg=msg)
 
