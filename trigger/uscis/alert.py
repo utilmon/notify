@@ -21,17 +21,18 @@ def record_status(new_status: dict):
     yaml.dump(history, open(path, "w"))
 
 
-def check_msg(input:dict, case_num:str):
+def check_msg(input: dict, case_num: str):
 
     output = input
 
     status = uscis.requestStatus(case_num)
 
     output[case_num] = status
-    
+
     return output
 
-def update_status(input:dict, case_numbers: list):
+
+def update_status(input: dict, case_numbers: list):
 
     output = copy.deepcopy(input)
 
@@ -39,6 +40,7 @@ def update_status(input:dict, case_numbers: list):
         output = check_msg(output, case_num)
 
     return output
+
 
 def read_msg():
     history = yaml.safe_load(open(os.path.dirname(__file__) + "/history.yaml", "r"))
@@ -58,4 +60,3 @@ if __name__ == "__main__":
         gmail.send_strmsg(title="Python: USCIS update", msg=msg)
 
         record_status(new_status)
-    
