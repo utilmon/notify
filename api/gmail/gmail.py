@@ -48,7 +48,7 @@ def send_message(service, user_id, message):
         message = (
             service.users().messages().send(userId=user_id, body=message).execute()
         )
-        print(f'Message Id: {message["id"]}')
+        #print(f'Message Id: {message["id"]}')
         return message
     except Exception as e:
         print(f"An error occurred: {e}")
