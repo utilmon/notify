@@ -21,23 +21,13 @@ def record_status(new_status: dict):
     yaml.dump(history, open(path, "w"))
 
 
-def check_msg(input: dict, case_num: str):
-
-    output = input
-
-    status = uscis.requestStatus(case_num)
-
-    output[case_num] = status
-
-    return output
-
-
 def update_status(input: dict, case_numbers: list):
 
     output = copy.deepcopy(input)
 
     for case_num in case_numbers:
-        output = check_msg(output, case_num)
+        status = uscis.requestStatus(case_num) # fetch case status
+        output[case_num] = status
 
     return output
 
@@ -49,8 +39,8 @@ def read_msg():
 
 if __name__ == "__main__":
 
-    old_status = read_msg()
-    new_status = update_status(old_status, uscis_config.receipt_numbers)
+    old_status = read_msg() # Read case status from history.yaml
+    new_status = update_status(old_status, uscis_config.receipt_numbers) # fetch status
 
     if new_status != old_status:
 
