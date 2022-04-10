@@ -10,7 +10,7 @@ import checkUSCIS as uscis
 import json
 import copy
 
-from . import uscis_config
+import uscis_config
 
 
 def record_status(new_status: dict):
