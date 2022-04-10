@@ -10,7 +10,7 @@ import checkUSCIS as uscis
 import json
 import copy
 
-receipt_numbers = ["MSC2290390290", "MSC2290390292", "MSC2290390291"]
+from . import uscis_config
 
 
 def record_status(new_status: dict):
@@ -50,7 +50,7 @@ def read_msg():
 if __name__ == "__main__":
 
     old_status = read_msg()
-    new_status = update_status(old_status, receipt_numbers)
+    new_status = update_status(old_status, uscis_config.receipt_numbers)
 
     if new_status != old_status:
 
