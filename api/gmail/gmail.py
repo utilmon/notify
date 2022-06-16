@@ -84,13 +84,13 @@ def get_credentials():
 def test():
     service = build("gmail", "v1", credentials=get_credentials())
 
-    message = create_message(config.email, config.email, "test", "test_body")
+    message = create_message(config.email, config.email2, "test", "test_body")
     send_message(service, "me", message)
 
 
 def send_strmsg(title= "Python Alert", msg: str = "Alert Body"):
     service = build("gmail", "v1", credentials=get_credentials())
-    message = create_message(config.email, config.email, title, msg)
+    message = create_message(config.email, config.email2, title, msg)
     send_message(service, "me", message)
 
 
