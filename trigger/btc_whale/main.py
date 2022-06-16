@@ -40,7 +40,7 @@ def read_bal():
 if __name__ == "__main__":
 
     current_balance = get_balance()
-    diff = current_balance - read_bal()
+    diff = int(current_balance - read_bal())
     title = "Python: 3rd Whale alert"
     if diff > 1:
         msg = f"3rd BTC whale just bought {diff} BTC ({diff/current_balance * 100:.3g} % of portfolio)"
