@@ -35,7 +35,7 @@ def PollNeighbours(prefix,CaseNum,neighbours=10,processingStr="we received your 
 def requestStatus(caseID):
     #
     formData={"changeLocale":None,"completedActionsCurrentPage":0,"upcomingActionsCurrentPage":0,"appReceiptNum":caseID,"caseStatusSearchBtn":"CHECK STATUS"}
-    response = requests.post('https://egov.uscis.gov/casestatus/mycasestatus.do',data=formData)
+    response = requests.post('https://egov.uscis.gov/casestatus/mycasestatus.do',data=formData, verify=False)
     soup=bs(response.content, "html.parser" )
     msg=soup.select("div form div div div div div div.rows.text-center p")[0].get_text()
     #print(bcolors.BOLD++bcolors.ENDC+"\n")
