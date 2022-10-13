@@ -5,8 +5,8 @@ import sys
 import random
 import re
 import argparse
-
-
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class bcolors:
     HEADER = '\033[95m'
