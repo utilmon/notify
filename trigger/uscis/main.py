@@ -9,6 +9,7 @@ import gmail
 import checkUSCIS as uscis
 import json
 import copy
+import time
 
 import uscis_config
 
@@ -26,7 +27,14 @@ def update_status(input: dict, case_numbers: list):
     output = copy.deepcopy(input)
 
     for case_num in case_numbers:
-        status = uscis.requestStatus(case_num) # fetch case status
+        for _ in range(100):
+            try:
+                status = uscis.requestStatus(case_num) # fetch case status
+            except requests.exceptions.ConnectionError:
+                time.sleep(5)
+                continue
+            break
+
         output[case_num] = status
 
     return output
