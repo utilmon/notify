@@ -33,9 +33,6 @@ def update_status(input: dict, case_numbers: list):
             except requests.exceptions.ConnectionError:
                 time.sleep(5)
                 continue
-            except IndexError as e:
-                print(e)
-                break
             break
 
         output[case_num] = status
@@ -51,7 +48,11 @@ def read_msg():
 if __name__ == "__main__":
 
     old_status = read_msg() # Read case status from history.yaml
-    new_status = update_status(old_status, uscis_config.receipt_numbers) # fetch status
+    try:
+        new_status = update_status(old_status, uscis_config.receipt_numbers) # fetch status
+    except IndexError as e:
+        print(e)
+        new_status = old_status
 
     if new_status != old_status:
 
