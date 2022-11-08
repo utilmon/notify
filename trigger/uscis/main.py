@@ -51,7 +51,7 @@ if __name__ == "__main__":
     try:
         new_status = update_status(old_status, uscis_config.receipt_numbers) # fetch status
     except IndexError as e:
-        print(e)
+        # print(e)
         new_status = old_status
 
     if new_status != old_status:
