@@ -33,6 +33,9 @@ def update_status(input: dict, case_numbers: list):
             except requests.exceptions.ConnectionError:
                 time.sleep(5)
                 continue
+            except IndexError as e:
+                print(e)
+                break
             break
 
         output[case_num] = status
