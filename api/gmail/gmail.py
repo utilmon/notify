@@ -10,7 +10,6 @@ SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 
 import base64
 from email.mime.text import MIMEText
-from . import config
 
 
 def create_message(sender, to, subject, message_text):
@@ -48,7 +47,7 @@ def send_message(service, user_id, message):
         message = (
             service.users().messages().send(userId=user_id, body=message).execute()
         )
-        #print(f'Message Id: {message["id"]}')
+        # print(f'Message Id: {message["id"]}')
         return message
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -62,7 +61,7 @@ def get_credentials():
     # time.
 
     # token.json path
-    token_path = f'{os.path.dirname(__file__)}/token.json'
+    token_path = f"{os.path.dirname(__file__)}/token.json"
 
     if os.path.exists(token_path):
         creds = Credentials.from_authorized_user_file(token_path, SCOPES)
@@ -71,26 +70,33 @@ def get_credentials():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(
+                f"{os.path.dirname(__file__)}/credentials.json", SCOPES
+            )
             creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
+        ## Save the credentials for the next run -> commented since lambda doesn't have write permission
         with open(token_path, "w") as token:
             token.write(creds.to_json())
 
     return creds
 
+
 ### Custom functions ###
+
 
 def test():
     service = build("gmail", "v1", credentials=get_credentials())
 
-    message = create_message(config.email, config.email2, "test", "test_body")
+    message = create_message(
+        "fake@email.com", "utilmonn@gmail.com", "test", "test_body 342"
+    )
+    # A fake email was needed to solve errors and ios notificion trigger
     send_message(service, "me", message)
 
 
-def send_strmsg(title= "Python Alert", msg: str = "Alert Body"):
+def send_strmsg(title="Python Alert", msg: str = "Alert Body"):
     service = build("gmail", "v1", credentials=get_credentials())
-    message = create_message(config.email, config.email2, title, msg)
+    message = create_message("fake@email.com", "utilmonn@gmail.com", title, msg)
     send_message(service, "me", message)
 
 
