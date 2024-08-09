@@ -1,103 +1,47 @@
-from __future__ import print_function
-import os.path
-from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-
-# If modifying these scopes, delete the file token.json.
-SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
-
-import base64
+import smtplib
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from . import credential as c
 
 
-def create_message(sender, to, subject, message_text):
-    """Create a message for an email.
+def create_message(receiver_email, subject, message_body):
 
-    Args:
-      sender: Email address of the sender.
-      to: Email address of the receiver.
-      subject: The subject of the email message.
-      message_text: The text of the email message.
+    # Create message container
+    msg = MIMEMultipart()
+    msg["From"] = c.gmail_user
+    msg["To"] = receiver_email
+    msg["Subject"] = subject
 
-    Returns:
-      An object containing a base64url encoded email object.
-    """
-    message = MIMEText(message_text)
-    message["to"] = to
-    message["from"] = sender
-    message["subject"] = subject
-    return {"raw": base64.urlsafe_b64encode(message.as_string().encode()).decode()}
+    # Attach the body with the msg instance
+    msg.attach(MIMEText(message_body, "plain"))
+
+    return msg.as_string()
 
 
-def send_message(service, user_id, message):
-    """Send an email message.
+def send_email(to_email, subject, body):
 
-    Args:
-      service: Authorized Gmail API service instance.
-      user_id: User's email address. The special value "me"
-      can be used to indicate the authenticated user.
-      message: Message to be sent.
+    msg = create_message(to_email, subject, body)
 
-    Returns:
-      Sent Message.
-    """
-    try:
-        message = (
-            service.users().messages().send(userId=user_id, body=message).execute()
-        )
-        # print(f'Message Id: {message["id"]}')
-        return message
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    # Create the server object
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.starttls()
 
+    # Login credentials for sending the mail
+    server.login(c.gmail_user, c.app_password)
 
-def get_credentials():
+    # Send the message via the server
+    server.sendmail(c.gmail_user, to_email, msg)
 
-    creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-
-    # token.json path
-    token_path = f"{os.path.dirname(__file__)}/token.json"
-
-    if os.path.exists(token_path):
-        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                f"{os.path.dirname(__file__)}/credentials.json", SCOPES
-            )
-            creds = flow.run_local_server(port=0)
-        ## Save the credentials for the next run -> commented since lambda doesn't have write permission
-        with open(token_path, "w") as token:
-            token.write(creds.to_json())
-
-    return creds
-
-
-### Custom functions ###
-
-
-def test():
-    service = build("gmail", "v1", credentials=get_credentials())
-
-    message = create_message(
-        "fake@email.com", "utilmonn@gmail.com", "test", "test_body 342"
-    )
-    # A fake email was needed to solve errors and ios notificion trigger
-    send_message(service, "me", message)
+    # Close the server
+    server.quit()
 
 
 def send_strmsg(title="Python Alert", msg: str = "Alert Body"):
-    service = build("gmail", "v1", credentials=get_credentials())
-    message = create_message("fake@email.com", "utilmonn@gmail.com", title, msg)
-    send_message(service, "me", message)
+    send_email(to_email="utilmonn@gmail.com", subject=title, body=msg)
+
+
+def test():
+    send_strmsg("test", "test_body")
 
 
 if __name__ == "__main__":
