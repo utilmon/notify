@@ -1,1 +1,0 @@
-from .gmail import test, send_strmsg
